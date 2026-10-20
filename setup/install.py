@@ -12,6 +12,7 @@ and finishes with the doctor report. Safe to run again.
 import argparse
 import json
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -174,18 +175,25 @@ def write_snippets(user):
     return len(snippets)
 
 
+def read_sublime_json(text):
+    """Parse a Sublime settings file: it allows // comments and trailing commas, plain JSON does not."""
+    text = re.sub(r"^\s*//.*$", "", text, flags=re.M)
+    text = re.sub(r",(\s*[}\]])", r"\1", text)
+    return json.loads(text)
+
+
 def write_preferences(user):
-    """Enable Vintage by clearing ignored_packages. Keeps other settings; backs up unreadable files."""
+    """Enable Vintage by clearing ignored_packages. Keeps every other setting."""
     prefs = user / "Preferences.sublime-settings"
     data = {}
     if prefs.exists():
         try:
-            data = json.loads(prefs.read_text())
+            data = read_sublime_json(prefs.read_text())
         except json.JSONDecodeError:
-            # Sublime files may contain comments, which json can't read. Keep a copy and start fresh.
+            # Keep an untouched copy before writing anything, so nothing is lost.
             shutil.copy(prefs, user / "Preferences.sublime-settings.bak")
-            warn("Preferences had comments; saved a copy as Preferences.sublime-settings.bak")
-            data = {}
+            warn("Preferences could not be read; saved a copy as Preferences.sublime-settings.bak")
+            return
     data["ignored_packages"] = []
     prefs.write_text(json.dumps(data, indent=4) + "\n")
 
