@@ -22,14 +22,9 @@ python3 scripts/stress.py examples/sum-of-two -n 200      # random tests against
 python3 scripts/doctor.py                                 # check the setup
 ```
 
-## Two copies: tools and contests
+## Your contests
 
-Keep two clones of this repository:
-
-- **Tool source** (where changes are made and pushed): this repository.
-- **Contest workspace** (your real solutions, under `contests/`): a separate clone. Update it with `git pull`, never by copying files over.
-
-Run `setup/install.py` in each clone that you use with an editor. Sublime Text's build system points at the clone you ran it in last.
+Save every real problem under `contests/`. Git ignores that folder, so your solutions are never committed.
 
 ## Platforms
 
@@ -40,7 +35,7 @@ Apple's `g++` is clang and has no `bits/stdc++.h`, so cf-kit uses GCC. Set `CP_C
 
 ## Contributing
 
-Run `python3 scripts/doctor.py` and the commands above before opening a pull request. Your problems under `contests/` stay local and are not tracked.
+Run `python3 scripts/doctor.py` and the commands above before opening a pull request.
 
 ## License
 
