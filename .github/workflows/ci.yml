@@ -7,17 +7,12 @@ on:
 
 jobs:
   setup:
-    name: installer and tools (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    name: installer and tools (macOS)
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install GCC (macOS)
-        if: runner.os == 'macOS'
+      - name: Install GCC
         run: brew install gcc
 
       - name: Run the installer non-interactively

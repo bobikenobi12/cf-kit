@@ -241,7 +241,7 @@ def next_steps():
     print("    python3 scripts/judge.py examples/sum-of-two/sol.cpp")
     print("\nFor a real contest:")
     print("    python3 scripts/listen.py        # leave it running, then click Competitive Companion")
-    print("    Docs: docs/index.html (or the PDF next to it)\n")
+    print("    Guide: docs/guide.html (or docs/cf-kit-guide.pdf)\n")
 
 
 def main():
