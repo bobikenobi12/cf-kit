@@ -1,0 +1,14 @@
+# Build output and caches
+build/
+stress_fail/
+__pycache__/
+include/bits/stdc++.h.gch
+
+# Generated per machine by setup/install.py (compiler path differs between machines)
+.vscode/c_cpp_properties.json
+
+# Your contests stay local. Only the placeholder is tracked.
+contests/*
+!contests/.gitkeep
+
+.DS_Store

@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CP: judge",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/scripts/judge.py", "${file}"],
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "CP: judge (debug)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/scripts/judge.py", "${file}", "--debug"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "CP: stress",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/scripts/stress.py", "${fileDirname}", "-n", "500"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "CP: listen",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/scripts/listen.py"],
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "CP: build precompiled header",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/scripts/pch.py"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true }
+    }
+  ]
+}

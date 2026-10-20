@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cf-kit · Codeforces C++ setup</title>
+<meta name="description" content="One command sets up a C++ workspace for Codeforces: automatic problem import, GCC, fast I/O template, snippets, sample and stress testing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Tokens: zero-chroma OKLCH grayscale. Chromatic values only for meaning (success / warning / destructive). */
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0 0 0);
+    --primary: oklch(0 0 0);
+    --muted: oklch(0.9851 0 0);
+    --muted-foreground: oklch(0.5103 0 0);
+    --border: oklch(0.937 0 0);
+    --ring: oklch(0 0 0);
+    --success: oklch(0.59 0.13 152);
+    --warning: oklch(0.72 0.16 75);
+    --destructive: oklch(0.596 0.2446 29.2339);
+    --radius: 0.375rem;
+    --tracking: -0.02em;
+    --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --shadow: 0 1px 2px oklch(0 0 0 / 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --background: oklch(0 0 0);
+      --foreground: oklch(1 0 0);
+      --primary: oklch(1 0 0);
+      --muted: oklch(0.1776 0 0);
+      --muted-foreground: oklch(0.7058 0 0);
+      --border: oklch(0.3211 0 0);
+      --ring: oklch(1 0 0);
+      --success: oklch(0.65 0.14 152);
+      --warning: oklch(0.78 0.16 75);
+      --destructive: oklch(0.628 0.2577 29.2339);
+      --shadow: 0 1px 2px oklch(0 0 0 / 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --background: oklch(0 0 0);
+    --foreground: oklch(1 0 0);
+    --primary: oklch(1 0 0);
+    --muted: oklch(0.1776 0 0);
+    --muted-foreground: oklch(0.7058 0 0);
+    --border: oklch(0.3211 0 0);
+    --ring: oklch(1 0 0);
+    --success: oklch(0.65 0.14 152);
+    --warning: oklch(0.78 0.16 75);
+    --destructive: oklch(0.628 0.2577 29.2339);
+    --shadow: 0 1px 2px oklch(0 0 0 / 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--background); color: var(--foreground);
+    font-family: var(--font-sans); font-size: 15px; line-height: 1.6; letter-spacing: var(--tracking);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-underline-offset: 3px; }
+  code, pre, kbd { font-family: var(--font-mono); }
+  code { font-size: 0.86em; background: var(--muted); padding: 0.1em 0.35em; border-radius: 4px; border: 1px solid var(--border); }
+  kbd {
+    font-size: 12px; background: var(--background); border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 6px; white-space: nowrap;
+  }
+
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  @media (min-width: 1024px) { .container { padding: 0 32px; } }
+
+  /* Header */
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--background); z-index: 10; }
+  .top .container { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 16px; }
+  .brand { font-weight: 600; letter-spacing: -0.03em; text-decoration: none; font-size: 16px; }
+  .brand span { color: var(--muted-foreground); font-weight: 400; }
+  nav.links { display: flex; gap: 18px; font-size: 14px; color: var(--muted-foreground); }
+  nav.links a { text-decoration: none; }
+  nav.links a:hover { color: var(--foreground); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  @media (max-width: 720px) { nav.links { display: none; } }
+
+  button.theme {
+    font: inherit; font-size: 13px; color: var(--foreground); background: transparent; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 5px 10px; cursor: pointer;
+  }
+  button.theme:hover { background: var(--muted); }
+
+  /* Eyebrow: mono, uppercase, wide tracking, muted */
+  .eyebrow {
+    font-family: var(--font-mono); text-transform: uppercase; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.16em; color: var(--muted-foreground); margin: 0 0 12px;
+  }
+
+  /* Hero */
+  .hero { padding: 64px 0 40px; }
+  h1 { font-size: clamp(38px, 6vw, 60px); line-height: 1.02; font-weight: 600; letter-spacing: -0.04em; margin: 0 0 16px; }
+  .lede { font-size: 18px; color: var(--muted-foreground); max-width: 60ch; margin: 0 0 28px; line-height: 1.5; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 500; letter-spacing: var(--tracking); text-decoration: none;
+    padding: 9px 16px; border-radius: var(--radius); border: 1px solid var(--primary);
+    background: var(--primary); color: var(--background); cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn.ghost { background: transparent; color: var(--foreground); border-color: var(--border); }
+  .btn:hover { opacity: 0.88; }
+
+  /* Install block */
+  .install {
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); box-shadow: var(--shadow);
+    max-width: 100%; overflow: hidden;
+  }
+  .install__head {
+    display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: 12px; color: var(--muted-foreground);
+  }
+  .install pre {
+    margin: 0; padding: 16px; font-size: 14px; line-height: 1.5;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  .install pre .prompt { color: var(--muted-foreground); user-select: none; }
+
+  /* Stat grid: a hairline grid, not a grid of cards */
+  .statgrid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 40px 0;
+  }
+  @media (min-width: 720px) { .statgrid { grid-template-columns: repeat(4, 1fr); } }
+  .stat { background: var(--background); padding: 18px; }
+  .stat__label { font-size: 13px; color: var(--muted-foreground); margin: 0 0 6px; }
+  .stat__value { font-family: var(--font-mono); font-weight: 500; font-size: 26px; letter-spacing: -0.03em; margin: 0; }
+
+  /* Sections */
+  section.block { padding: 48px 0; border-top: 1px solid var(--border); }
+  h2 { font-size: clamp(26px, 3.4vw, 36px); line-height: 1.08; font-weight: 600; letter-spacing: -0.035em; margin: 0 0 12px; }
+  h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; margin: 28px 0 8px; }
+  p { margin: 0 0 14px; }
+  .muted { color: var(--muted-foreground); }
+  ol.steps, ul.list { padding-left: 20px; margin: 0 0 14px; }
+  ol.steps li, ul.list li { margin: 6px 0; }
+
+  /* Panel: the surface for grouped content */
+  .panel { border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); overflow: hidden; }
+  .panel__head { padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px; letter-spacing: -0.01em; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .panel__body { padding: 16px; }
+  .split { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 880px) { .split { grid-template-columns: 1fr 1fr; } }
+
+  /* Pills: hue only carries status */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 9px;
+    border-radius: 999px; border: 1px solid var(--border); color: var(--muted-foreground); white-space: nowrap;
+  }
+  .pill--success { color: var(--success); border-color: color-mix(in oklch, var(--success) 30%, transparent); background: color-mix(in oklch, var(--success) 10%, transparent); }
+  .pill--warning { color: var(--warning); border-color: color-mix(in oklch, var(--warning) 30%, transparent); background: color-mix(in oklch, var(--warning) 10%, transparent); }
+  .pill--destructive { color: var(--destructive); border-color: color-mix(in oklch, var(--destructive) 30%, transparent); background: color-mix(in oklch, var(--destructive) 10%, transparent); }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); margin: 8px 0 18px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted-foreground); background: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+
+  /* Code */
+  pre.code {
+    background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px;
+    overflow-x: auto; font-size: 13px; line-height: 1.55; margin: 8px 0 18px;
+  }
+  pre.code code { background: none; border: 0; padding: 0; font-size: inherit; }
+
+  .callout { border-left: 2px solid var(--foreground); padding: 4px 0 4px 16px; margin: 18px 0; color: var(--muted-foreground); }
+  .callout strong { color: var(--foreground); }
+
+
+  footer { border-top: 1px solid var(--border); padding: 28px 0 40px; font-size: 13px; color: var(--muted-foreground); }
+  footer .container { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+  /* Print: the PDF is generated from this page. Force light, drop chrome. */
+  @media print {
+    :root, :root[data-theme] {
+      --background: #fff; --foreground: #000; --primary: #000; --muted: #f4f4f4; --muted-foreground: #555;
+      --border: #d9d9d9; --ring: #000; --success: #166534; --warning: #92400e; --destructive: #991b1b; --shadow: none;
+    }
+    header.top, button.theme, .actions, .no-print { display: none !important; }
+    body { font-size: 11pt; }
+    section.block, .panel, .install, .table-wrap, details, pre { break-inside: avoid; }
+    pre.code { white-space: pre-wrap; word-break: break-word; }
+    .split > div { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+    a { text-decoration: none; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="container">
+    <a class="brand" href="#top">cf-kit <span>/ codeforces</span></a>
+    <nav class="links">
+      <a href="#quickstart">Quickstart</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#testing">Testing</a>
+      <a href="#troubleshooting">Troubleshooting</a>
+      <a href="cf-kit-guide.pdf">PDF</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme" id="theme" type="button" aria-label="Toggle light and dark theme">Theme</button>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="container">
+
+  <div class="hero">
+    <p class="eyebrow">Codeforces · C++ · macOS and Linux</p>
+    <h1>Set up a contest-ready C++ workspace in one command.</h1>
+    <p class="lede">Problems import themselves from your browser. Your editor runs the samples with a key press. Random stress tests check your solution against a brute force. Works with VS Code + Vim and Sublime Text + Vim.</p>
+
+    <div class="install" role="group" aria-label="Install command">
+      <div class="install__head">
+        <span>terminal</span>
+        <button class="theme" type="button" data-copy="curl -fsSL https://raw.githubusercontent.com/bobikenobi12/cf-kit/main/install.sh | bash">Copy</button>
+      </div>
+      <pre><code><span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/bobikenobi12/cf-kit/main/install.sh | bash</code></pre>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="#quickstart">Start in 4 steps</a>
+      <a class="btn ghost" href="cf-kit-guide.pdf">Read the guide (PDF)</a>
+      <a class="btn ghost" href="https://github.com/bobikenobi12/cf-kit">View on GitHub</a>
+    </div>
+
+    <div class="statgrid">
+      <div class="stat"><p class="stat__label">Install command</p><p class="stat__value">1</p></div>
+      <div class="stat"><p class="stat__label">Editors supported</p><p class="stat__value">2</p></div>
+      <div class="stat"><p class="stat__label">Snippets included</p><p class="stat__value">8</p></div>
+      <div class="stat"><p class="stat__label">Random tests per stress run</p><p class="stat__value">500</p></div>
+    </div>
+  </div>
+
+  <section class="block" id="quickstart">
+    <p class="eyebrow">Quickstart</p>
+    <h2>Four steps, about five minutes.</h2>
+    <p class="muted">You need git, Python 3.9+, and GCC. The installer checks for GCC and offers to install it with Homebrew on macOS.</p>
+    <ol class="steps">
+      <li><strong>Run the install command</strong> above. It downloads cf-kit to <code>~/cf-kit</code> and asks a few yes/no questions. Press Enter to accept the defaults.</li>
+      <li><strong>Install the browser extension</strong> <em>Competitive Companion</em>. The installer links to it.</li>
+      <li><strong>Start the listener</strong> and leave it running: <code>python3 ~/cf-kit/scripts/listen.py</code> (or <kbd>Space</kbd> <kbd>l</kbd> in VS Code).</li>
+      <li><strong>Click the extension</strong> on any Codeforces problem. Its folder appears in <code>contests/</code>, with the samples and a solution file ready.</li>
+    </ol>
+    <div class="callout"><strong>Want to try it first?</strong> Run <code>python3 scripts/judge.py examples/sum-of-two/sol.cpp</code>. The example ships with the repository and passes its samples.</div>
+
+    <h3>Options for the installer</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>... | bash -s -- --yes</code></td><td>Accept every default without asking. Good for scripts.</td></tr>
+      <tr><td><code>... | bash -s -- --skip-editors</code></td><td>Don't change VS Code or Sublime Text. Only the compiler and header.</td></tr>
+      <tr><td><code>python3 scripts/doctor.py</code></td><td>Check the setup again at any time. Prints what is wrong and how to fix it.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="block" id="workflow">
+    <p class="eyebrow">How it works</p>
+    <h2>From a problem to an accepted solution.</h2>
+    <div class="split">
+      <div class="panel">
+        <div class="panel__head">1. Import <span class="pill">automatic</span></div>
+        <div class="panel__body"><p>Competitive Companion sends the statement's samples to a local listener on port 27121. Each problem gets its own folder, named from its URL.</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel__head">2. Write <span class="pill">your code</span></div>
+        <div class="panel__body"><p><code>sol.cpp</code> opens from a template with fast I/O, short aliases, and a debug macro that disappears on Codeforces.</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel__head">3. Check <span class="pill pill--success">one key</span></div>
+        <div class="panel__body"><p>The judge compiles with the same flags as the release build and runs every sample with its time limit. It shows the first difference when an answer is wrong.</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel__head">4. Stress <span class="pill pill--warning">before submitting</span></div>
+        <div class="panel__body"><p>Your solution is compared with a slow brute force on random inputs. The first mismatch is saved so you can reproduce it.</p></div>
+      </div>
+    </div>
+
+    <h3>Folder layout</h3>
+    <pre class="code"><code>cf-kit/
+├── install.sh              one-line bootstrap
+├── setup/install.py        interactive installer
+├── scripts/
+│   ├── listen.py           receives problems from the browser
+│   ├── judge.py            runs samples; --debug adds sanitizers
+│   ├── stress.py           random testing against brute.cpp
+│   ├── doctor.py           checks everything, says how to fix it
+│   ├── common.py           compiler, flags, comparison
+│   └── pch.py              builds the precompiled header
+├── templates/              sol.cpp, brute.cpp, gen.py
+├── examples/sum-of-two/    a problem to try the tools on
+├── .vscode/                settings, tasks, snippets
+└── contests/               your problems (kept out of git)</code></pre>
+  </section>
+
+  <section class="block" id="editors">
+    <p class="eyebrow">Editors</p>
+    <h2>Vim keys, in both editors.</h2>
+    <div class="split">
+      <div>
+        <h3>VS Code + Vim</h3>
+        <p class="muted">The installer configures the Vim extension and C/C++ IntelliSense. Leader is <kbd>Space</kbd>.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Keys</th><th>Action</th></tr>
+          <tr><td><kbd>Space</kbd> <kbd>b</kbd></td><td>Judge the current file on the samples</td></tr>
+          <tr><td><kbd>Space</kbd> <kbd>d</kbd></td><td>Judge with sanitizers and bounds checks</td></tr>
+          <tr><td><kbd>Space</kbd> <kbd>s</kbd></td><td>Stress test this problem</td></tr>
+          <tr><td><kbd>Space</kbd> <kbd>l</kbd></td><td>Start the problem listener</td></tr>
+          <tr><td><kbd>j</kbd> <kbd>k</kbd></td><td>Leave insert mode</td></tr>
+          <tr><td><kbd>Cmd</kbd> <kbd>Shift</kbd> <kbd>B</kbd></td><td>Judge (default build task, works without Vim)</td></tr>
+        </table></div>
+      </div>
+      <div>
+        <h3>Sublime Text + Vim</h3>
+        <p class="muted">The installer enables Sublime's built-in Vintage mode and adds a build system.</p>
+        <ul class="list">
+          <li><strong>Judge:</strong> <kbd>Cmd</kbd> <kbd>B</kbd> with <em>Tools &gt; Build System &gt; CF-C++</em> selected. Select it once per window.</li>
+          <li><strong>Debug build:</strong> <em>Tools &gt; Build With &gt; Debug</em>.</li>
+          <li><strong>Errors:</strong> the output panel links jump to the line.</li>
+          <li><strong>Snippets:</strong> type the prefix, then <kbd>Tab</kbd>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="template">
+    <p class="eyebrow">The template</p>
+    <h2>Fast I/O and minimal boilerplate.</h2>
+    <p>Every new <code>sol.cpp</code> starts from this file. The lines that matter for speed and correctness:</p>
+    <pre class="code"><code>ios::sync_with_stdio(false);   // C++ streams stop syncing with C stdio: much faster I/O
+cin.tie(nullptr);              // cout is no longer flushed before each cin read
+
+using ll = long long;          // use ll whenever values can exceed 2*10^9
+#define all(x) begin(x), end(x)
+
+#ifdef LOCAL
+#define dbg(x) cerr &lt;&lt; "[" &lt;&lt; __LINE__ &lt;&lt; "] " &lt;&lt; #x &lt;&lt; " = " &lt;&lt; (x) &lt;&lt; '\n'
+#else
+#define dbg(x) ((void)0)           // compiles to nothing on Codeforces
+#endif</code></pre>
+    <ul class="list">
+      <li><strong><code>'\n'</code>, not <code>endl</code>.</strong> <code>endl</code> flushes on every line, which is slow for large output.</li>
+      <li><strong><code>ll</code> instead of <code>long</code>.</strong> Codeforces compiles on Windows, where <code>long</code> is 32 bits. On macOS and Linux it is 64 bits, so code that relies on it can pass locally and fail on the judge.</li>
+      <li><strong>Debug output is free.</strong> <code>dbg(x)</code> prints to stderr only when <code>LOCAL</code> is defined, which the local tools do. You can leave it in submitted code.</li>
+    </ul>
+  </section>
+
+  <section class="block" id="snippets">
+    <p class="eyebrow">Snippets</p>
+    <h2>Eight snippets, same in both editors.</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Prefix</th><th>Expands to</th></tr>
+      <tr><td><code>cp</code></td><td>The whole template</td></tr>
+      <tr><td><code>forn</code></td><td><code>for (int i = 0; i &lt; n; ++i)</code></td></tr>
+      <tr><td><code>forr</code></td><td>Loop from <code>n-1</code> down to <code>0</code></td></tr>
+      <tr><td><code>vin</code></td><td>Read <code>n</code> values into a vector</td></tr>
+      <tr><td><code>bs</code></td><td>Binary search for the smallest <code>x</code> where <code>ok(x)</code> holds</td></tr>
+      <tr><td><code>mpow</code></td><td>Modular power by repeated squaring</td></tr>
+      <tr><td><code>yn</code></td><td>Print <code>YES</code> or <code>NO</code></td></tr>
+      <tr><td><code>dbg</code></td><td>Debug print</td></tr>
+    </table></div>
+    <p class="muted">Snippets live in <code>.vscode/cpp.code-snippets</code>. The installer converts them for Sublime, so edit one file and run the installer again.</p>
+  </section>
+
+  <section class="block" id="testing">
+    <p class="eyebrow">Testing</p>
+    <h2>Three levels, from fast to thorough.</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Tool</th><th>What it checks</th><th>When</th></tr>
+      <tr><td><code>judge.py</code></td><td>Your solution on the samples. Reports OK, WA with a diff, RE, or TLE.</td><td>After every change</td></tr>
+      <tr><td><code>judge.py&nbsp;--debug</code></td><td>Same samples, with AddressSanitizer, UBSan and bounds-checked STL. Stops at the first bad access.</td><td>When a sample fails oddly, before submitting</td></tr>
+      <tr><td><code>stress.py</code></td><td>Your solution against <code>brute.cpp</code> on 500 random inputs from <code>gen.py</code>.</td><td>When the samples pass but you're not sure</td></tr>
+    </table></div>
+    <h3>Why the debug build exists</h3>
+    <p>Writing one element past the end of an array often passes the samples by luck. The release build hides the bug. The debug build stops with a message:</p>
+    <pre class="code"><code>test   2  RE        29 ms
+     Error: attempt to subscript container with out-of-bounds index 5,
+     but container only holds 2 elements.</code></pre>
+    <h3>Writing a generator and a brute force</h3>
+    <ol class="steps">
+      <li><strong>Brute force:</strong> the simplest correct solution, ignoring speed.</li>
+      <li><strong><code>gen.py</code>:</strong> print one valid, small input per run. The seed is passed as an argument, so every failure can be reproduced.</li>
+      <li><strong>Run stress.</strong> On a mismatch, the input is saved to <code>stress_fail/input.txt</code>. Read it, fix <code>sol.cpp</code> or <code>brute.cpp</code>, and run again.</li>
+    </ol>
+    <p class="muted">Small inputs are best: they keep the brute force fast and make bugs easy to see.</p>
+  </section>
+
+  <section class="block" id="routine">
+    <p class="eyebrow">Contest day</p>
+    <h2>The routine.</h2>
+    <ol class="steps">
+      <li>Start the listener and keep it running for the whole contest.</li>
+      <li>Click Competitive Companion on each problem. Open <code>sol.cpp</code>.</li>
+      <li>For tricky problems, write <code>brute.cpp</code> and <code>gen.py</code> first. They're cheap insurance.</li>
+      <li>Press <kbd>Space</kbd> <kbd>b</kbd> after each change. Fix every WA before moving on.</li>
+      <li>Before submitting: <kbd>Space</kbd> <kbd>d</kbd>, then <kbd>Space</kbd> <kbd>s</kbd> if you have a brute force.</li>
+      <li>Submit <code>sol.cpp</code>. The <code>dbg</code> lines do nothing on Codeforces.</li>
+    </ol>
+  </section>
+
+  <section class="block" id="troubleshooting">
+    <p class="eyebrow">Troubleshooting</p>
+    <h2>When something is off.</h2>
+    <p>Start with <code>python3 scripts/doctor.py</code>. It checks the compiler, the header, the port, the editors and the example, and prints the fix for each problem.</p>
+    <div class="panel" style="margin:10px 0"><div class="panel__head">No GCC found</div><div class="panel__body"><p>Apple's <code>g++</code> is clang, which has no <code>bits/stdc++.h</code>, so cf-kit uses Homebrew GCC. Run <code>brew install gcc</code>. On Linux, <code>sudo apt install g++</code>. To point at a specific compiler, set <code>CP_CXX=/path/to/g++-16</code>.</p></div></div>
+    <div class="panel" style="margin:10px 0"><div class="panel__head">Clicking Competitive Companion does nothing</div><div class="panel__body"><p>The listener must be running and must print <code>saved ...</code>. Open <code>http://127.0.0.1:27121/</code> in a browser. It should say the listener is running. If it doesn't, another program may hold port 27121.</p></div></div>
+    <div class="panel" style="margin:10px 0"><div class="panel__head">Compiles are slow</div><div class="panel__body"><p>Build the precompiled header with <code>python3 scripts/pch.py</code>. It must be rebuilt after a compiler upgrade.</p></div></div>
+    <div class="panel" style="margin:10px 0"><div class="panel__head">Vim keys do nothing in VS Code</div><div class="panel__body"><p>Open the repository root as the folder (not a subfolder), and check that the Vim extension is enabled.</p></div></div>
+    <div class="panel" style="margin:10px 0"><div class="panel__head">My answer is right, but the judge says WA</div><div class="panel__body"><p>The problem may accept several answers. The judge compares with one stored answer, so check the output by hand. Floating-point answers are compared with a tolerance of 10<sup>-6</sup>.</p></div></div>
+  </section>
+
+  <section class="block" id="limits">
+    <p class="eyebrow">Scope</p>
+    <h2>What this does and doesn't do.</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Area</th><th>Status</th><th>Notes</th></tr>
+      <tr><td>macOS, Apple Silicon, Homebrew GCC</td><td><span class="pill pill--success">Tested</span></td><td>The primary target. Every script was run on it.</td></tr>
+      <tr><td>Linux</td><td><span class="pill pill--warning">Best effort</span></td><td>The code avoids macOS-only paths. Not yet run on a Linux machine.</td></tr>
+      <tr><td>Sublime Text</td><td><span class="pill pill--warning">Config tested</span></td><td>The files are generated and validated. The editor UI itself has not been run by the project.</td></tr>
+      <tr><td>Hidden tests</td><td><span class="pill pill--destructive">Not available</span></td><td>Only the statement's samples are saved. Stress testing covers some of the gap.</td></tr>
+      <tr><td>Interactive problems</td><td><span class="pill pill--destructive">Not supported</span></td><td>The judge runs one program on a fixed input.</td></tr>
+      <tr><td>Debugger</td><td><span class="pill">Not configured</span></td><td>Use <code>dbg</code> and the sanitizer build.</td></tr>
+    </table></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <span>cf-kit · MIT License · <a href="https://github.com/bobikenobi12/cf-kit">github.com/bobikenobi12/cf-kit</a></span>
+    <span><a href="cf-kit-guide.pdf">Guide (PDF)</a> · <a href="https://github.com/bobikenobi12/cf-kit/issues">Report a problem</a></span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var button = document.getElementById("theme");
+    function current() {
+      var stored = null;
+      try { stored = localStorage.getItem("cf-kit-theme"); } catch (e) {}
+      if (stored === "light" || stored === "dark") return stored;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    function apply(theme) {
+      root.setAttribute("data-theme", theme);
+      button.textContent = theme === "dark" ? "Light" : "Dark";
+    }
+    apply(current());
+    button.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      try { localStorage.setItem("cf-kit-theme", next); } catch (e) {}
+      apply(next);
+    });
+
+    document.querySelectorAll("[data-copy]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        var text = el.getAttribute("data-copy");
+        var done = function () { el.textContent = "Copied"; setTimeout(function () { el.textContent = "Copy"; }, 1500); };
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+      });
+    });
+  })();
+</script>
+</body>
+</html>

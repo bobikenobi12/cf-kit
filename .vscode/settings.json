@@ -1,0 +1,27 @@
+{
+  "vim.leader": "<space>",
+  "vim.useSystemClipboard": true,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.useCtrlKeys": true,
+  "vim.insertModeKeyBindingsNonRecursive": [
+    { "before": ["j", "k"], "after": ["<Esc>"] }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    { "before": ["<leader>", "b"], "commands": [{ "command": "workbench.action.tasks.runTask", "args": "CP: judge" }] },
+    { "before": ["<leader>", "d"], "commands": [{ "command": "workbench.action.tasks.runTask", "args": "CP: judge (debug)" }] },
+    { "before": ["<leader>", "s"], "commands": [{ "command": "workbench.action.tasks.runTask", "args": "CP: stress" }] },
+    { "before": ["<leader>", "l"], "commands": [{ "command": "workbench.action.tasks.runTask", "args": "CP: listen" }] }
+  ],
+  "editor.tabSize": 4,
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/build": true,
+    "**/stress_fail": true,
+    "**/__pycache__": true
+  },
+  "[cpp]": {
+    "editor.tabSize": 4
+  }
+}

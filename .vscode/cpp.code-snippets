@@ -1,0 +1,86 @@
+{
+  "Competitive template": {
+    "prefix": "cp",
+    "description": "Full contest template with fast IO",
+    "body": [
+      "#include <bits/stdc++.h>",
+      "using namespace std;",
+      "",
+      "using ll = long long;",
+      "using ii = pair<int, int>;",
+      "using vi = vector<int>;",
+      "#define all(x) begin(x), end(x)",
+      "#define sz(x) int(size(x))",
+      "",
+      "#ifdef LOCAL",
+      "#define dbg(x) cerr << \"[\" << __LINE__ << \"] \" << #x << \" = \" << (x) << '\\n'",
+      "#else",
+      "#define dbg(x) ((void)0)",
+      "#endif",
+      "",
+      "void solve() {",
+      "    $0",
+      "}",
+      "",
+      "int main() {",
+      "    ios::sync_with_stdio(false);",
+      "    cin.tie(nullptr);",
+      "",
+      "    int t = 1;",
+      "    // cin >> t;",
+      "    while (t--) solve();",
+      "}"
+    ]
+  },
+  "For loop": {
+    "prefix": "forn",
+    "description": "for i in [0, n)",
+    "body": ["for (int ${1:i} = 0; $1 < ${2:n}; ++$1) {", "    $0", "}"]
+  },
+  "Reverse for loop": {
+    "prefix": "forr",
+    "description": "for i from n-1 down to 0",
+    "body": ["for (int ${1:i} = ${2:n} - 1; $1 >= 0; --$1) {", "    $0", "}"]
+  },
+  "Read vector": {
+    "prefix": "vin",
+    "description": "read n values into a vector",
+    "body": ["vector<${1:int}> ${2:a}(${3:n});", "for (auto& x : $2) cin >> x;", "$0"]
+  },
+  "Binary search on answer": {
+    "prefix": "bs",
+    "description": "smallest x in [lo, hi] where ok(x) holds",
+    "body": [
+      "ll lo = ${1:0}, hi = ${2:1000000000};",
+      "while (lo < hi) {",
+      "    ll mid = lo + (hi - lo) / 2;",
+      "    if (${3:ok(mid)}) hi = mid;",
+      "    else lo = mid + 1;",
+      "}",
+      "$0"
+    ]
+  },
+  "Modular power": {
+    "prefix": "mpow",
+    "description": "(base^exp) mod m by repeated squaring",
+    "body": [
+      "ll mpow(ll base, ll exp, ll m) {",
+      "    ll r = 1 % m;",
+      "    base %= m;",
+      "    for (; exp > 0; exp >>= 1, base = base * base % m)",
+      "        if (exp & 1) r = r * base % m;",
+      "    return r;",
+      "}$0"
+    ]
+  },
+  "Yes / No": {
+    "prefix": "yn",
+    "description": "print YES or NO",
+    "body": ["cout << (${1:cond} ? \"YES\" : \"NO\") << '\\n';$0"]
+  },
+  "Debug print": {
+    "prefix": "dbg",
+    "description": "print a variable to stderr (local only)",
+    "body": ["dbg($0);"]
+  }
+}

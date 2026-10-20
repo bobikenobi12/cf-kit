@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: installer and tools (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GCC (macOS)
+        if: runner.os == 'macOS'
+        run: brew install gcc
+
+      - name: Run the installer non-interactively
+        run: bash install.sh --yes --skip-editors
+
+      - name: Doctor
+        run: python3 scripts/doctor.py
+
+      - name: Judge the example
+        run: python3 scripts/judge.py examples/sum-of-two/sol.cpp
+
+      - name: Judge the example with sanitizers
+        run: python3 scripts/judge.py examples/sum-of-two/sol.cpp --debug
+
+      - name: Stress test the example
+        run: python3 scripts/stress.py examples/sum-of-two -n 200
+
+      - name: Check that the judge rejects a wrong solution
+        run: |
+          dir=$(mktemp -d)
+          cp -r examples/sum-of-two/tests examples/sum-of-two/problem.json "$dir"/
+          sed 's/a + b/a - b/' examples/sum-of-two/sol.cpp > "$dir/sol.cpp"
+          if python3 scripts/judge.py "$dir/sol.cpp"; then
+            echo "judge accepted a wrong solution" && exit 1
+          fi
+          echo "judge correctly rejected the wrong solution"
