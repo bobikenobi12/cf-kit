@@ -2,7 +2,7 @@
 
 A C++ workspace for Codeforces. Import problems from your browser with one click, run the samples with a key press, and stress test your solution against a brute force.
 
-Read the **[guide](docs/guide.html)** ([PDF](docs/cf-kit-guide.pdf)) for how it works and why.
+Read the **[guide](docs/index.html)** ([PDF](docs/cf-kit-guide.pdf)) for how it works and why.
 
 ## Install
 

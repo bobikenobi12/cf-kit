@@ -2,40 +2,187 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>cf-kit</title>
-<meta name="description" content="A C++ workspace for Codeforces: import problems from the browser, run samples, stress test against a brute force.">
+<title>cf-kit guide</title>
 <style>
-  :root { color-scheme: light dark; }
+  @page { size: A4; margin: 22mm 22mm 20mm; }
+  :root { color-scheme: light; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px; line-height: 1.6; color: #111; background: #fff;
-    max-width: 640px; margin: 0 auto; padding: 56px 20px 40px; letter-spacing: -0.01em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 11pt; line-height: 1.55; color: #111; background: #fff;
+    max-width: 680px; margin: 40px auto; padding: 0 20px;
+    letter-spacing: -0.01em;
   }
-  @media (prefers-color-scheme: dark) { body { color: #eee; background: #111; } a { color: #eee; } pre { background: #1c1c1c; } .muted { color: #999; } }
-  h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 8px; }
-  p { margin: 0 0 14px; }
-  .muted { color: #666; }
-  pre { font-family: Menlo, Consolas, monospace; font-size: 13px; background: #f5f5f5; padding: 12px 14px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; border-radius: 6px; }
-  ul { padding-left: 20px; margin: 0 0 14px; }
-  li { margin: 4px 0; }
+  h1 { font-size: 24pt; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 4px; }
+  .sub { color: #555; margin: 0 0 28px; }
+  h2 { font-size: 15pt; font-weight: 700; letter-spacing: -0.02em; margin: 32px 0 8px; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; font-weight: 700; margin: 18px 0 4px; page-break-after: avoid; }
+  p, li { margin: 6px 0; }
+  ul, ol { padding-left: 22px; margin: 6px 0 10px; }
+  li { margin: 3px 0; }
+  code { font-family: Menlo, Consolas, "Courier New", monospace; font-size: 9.5pt; }
+  pre {
+    font-family: Menlo, Consolas, "Courier New", monospace; font-size: 9pt; line-height: 1.45;
+    margin: 8px 0 12px; padding-left: 12px; border-left: 2px solid #ccc; white-space: pre-wrap;
+    page-break-inside: avoid;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 14px; font-size: 10pt; page-break-inside: avoid; }
+  th, td { text-align: left; vertical-align: top; padding: 5px 10px 5px 0; border-bottom: 1px solid #ddd; }
+  th { font-weight: 600; border-bottom: 1px solid #111; }
+  .note { color: #444; font-style: italic; }
+  .small { color: #666; font-size: 9.5pt; }
+  .toc { margin: 4px 0 0; padding-left: 0; list-style: none; }
+  .toc li { margin: 2px 0; }
   a { color: #111; }
-  footer { margin-top: 40px; font-size: 14px; color: #666; }
 </style>
 </head>
 <body>
-  <h1>cf-kit</h1>
-  <p>A C++ workspace for Codeforces. Import problems from your browser, run the samples with one key, and stress test your solution against a brute force.</p>
 
-  <p class="muted">Install (macOS, needs git, Python 3.9+ and GCC):</p>
-  <pre>curl -fsSL https://raw.githubusercontent.com/bobikenobi12/cf-kit/main/install.sh | bash</pre>
+<h1>cf-kit guide</h1>
+<p class="sub">How the Codeforces setup works, why each part exists, and how to use it. <a href="cf-kit-guide.pdf">Download as PDF</a>.</p>
 
-  <ul>
-    <li><a href="guide.html">Guide</a>: how it works and why, in about five pages</li>
-    <li><a href="cf-kit-guide.pdf">Guide (PDF)</a></li>
-    <li><a href="https://github.com/bobikenobi12/cf-kit">Source on GitHub</a></li>
-  </ul>
+<h2>1. What cf-kit does</h2>
+<p>Codeforces judges your solution on hidden tests. You only see a few sample tests in the statement. cf-kit gives you a local loop that catches most mistakes before you submit:</p>
+<ol>
+  <li><b>Import</b> the problem and its samples from your browser, with one click.</li>
+  <li><b>Write</b> the solution in a file that already has a fast, correct template.</li>
+  <li><b>Judge</b> it against the samples, with the same compiler flags Codeforces uses.</li>
+  <li><b>Stress test</b> it against a slow, simple solution on hundreds of random inputs. This finds bugs the samples miss.</li>
+</ol>
+<p>It works in VS Code or Sublime Text, both with Vim keys. macOS is the tested platform.</p>
 
-  <footer>MIT License</footer>
+<h2>2. Install</h2>
+<pre>curl -fsSL https://raw.githubusercontent.com/bobikenobi12/cf-kit/main/install.sh | bash</pre>
+<p>The installer clones the repository to <code>~/cf-kit</code>, asks a few yes/no questions, and then:</p>
+<ul>
+  <li>checks for GCC, and offers to install it with Homebrew if it is missing;</li>
+  <li>configures VS Code and Sublime Text, if you choose them;</li>
+  <li>builds the precompiled header (see section 4.3);</li>
+  <li>runs the doctor, which checks everything and prints a fix for each problem.</li>
+</ul>
+<p>Options: <code>--yes</code> accepts all defaults, <code>--skip-editors</code> leaves your editors alone. You can run the installer again at any time. It is safe to repeat.</p>
+<p>After that, install the <b>Competitive Companion</b> extension in your browser. Its project page is <a href="https://github.com/jmerle/competitive-companion">github.com/jmerle/competitive-companion</a>.</p>
+
+<h2>3. The daily workflow</h2>
+<p>Keep the listener running in a terminal (<code>python3 ~/cf-kit/scripts/listen.py</code>), then:</p>
+<ol>
+  <li>Open a problem on Codeforces and click Competitive Companion. A folder appears: <code>contests/&lt;contest&gt;/&lt;letter&gt;/</code>.</li>
+  <li>Open <code>sol.cpp</code> and write the solution.</li>
+  <li>Press <b>Space b</b> (VS Code) or <b>Cmd B</b> (Sublime) to run the samples.</li>
+  <li>Before submitting, press <b>Space s</b> to stress test, if you wrote a brute force.</li>
+</ol>
+<p>Each problem folder contains:</p>
+<pre>sol.cpp        your solution
+brute.cpp      a slow but simple solution, for stress testing
+gen.py         a random input generator, for stress testing
+problem.json   name, URL and time limit
+tests/         the sample inputs (N.in) and expected outputs (N.ans)
+build/         compiled programs (created automatically)</pre>
+
+<h2>4. The concepts</h2>
+
+<h3>4.1 Samples are not enough</h3>
+<p>The samples in a statement are usually small and easy. A solution can pass them and still fail on large or unusual inputs. That is why cf-kit has two checks: the judge runs the samples, and the stress tester searches for inputs where your solution disagrees with a brute force. A brute force is slow, but simple enough to trust.</p>
+
+<h3>4.2 The compiler</h3>
+<p>Codeforces compiles C++ with GCC on Windows. On macOS the default <code>g++</code> is Apple's clang, which does not include <code>bits/stdc++.h</code>, the header most competitive programmers use. So cf-kit uses GCC from Homebrew (<code>g++-16</code>).</p>
+<p>Every compile uses the same flags, defined in <code>scripts/common.py</code>:</p>
+<table>
+  <tr><th>Flag</th><th>Meaning</th></tr>
+  <tr><td><code>-std=gnu++20</code></td><td>The C++ standard used for most submissions.</td></tr>
+  <tr><td><code>-Wall -Wextra -Wshadow</code></td><td>Warnings. <code>-Wshadow</code> warns when a variable hides another one.</td></tr>
+  <tr><td><code>-O2</code></td><td>Optimisation, like the real judge. Without it, timings mean little.</td></tr>
+  <tr><td><code>-DLOCAL</code></td><td>Defines the macro <code>LOCAL</code>, so local-only code runs here and is skipped on Codeforces.</td></tr>
+</table>
+<p><b>Use <code>ll</code>, not <code>long</code>.</b> On Windows <code>long</code> is 32 bits; on macOS it is 64 bits. Code that uses <code>long</code> for large numbers can pass here and fail on Codeforces. <code>ll</code> means <code>long long</code> and is 64 bits everywhere.</p>
+
+<h3>4.3 The precompiled header</h3>
+<p>Including <code>bits/stdc++.h</code> makes the compiler read a large amount of standard library code every time. A precompiled header is that code, already processed and saved to disk as <code>include/bits/stdc++.h.gch</code>. The compiler loads the saved version instead of reading the source.</p>
+<p>It saves about half a second per compile on this Mac. It is optional: without it, everything still works, just a little slower. It must be rebuilt after a compiler upgrade, with <code>python3 scripts/pch.py</code>.</p>
+
+<h3>4.4 Fast input and output</h3>
+<p>Contests with a million numbers can time out on slow input. The template fixes this with two lines:</p>
+<pre>ios::sync_with_stdio(false);   // do not sync C++ streams with C stdio
+cin.tie(nullptr);             // do not flush cout before each read</pre>
+<p>Also print with <code>'\n'</code> instead of <code>endl</code>. <code>endl</code> flushes the output on every line, which is slow for large output.</p>
+
+<h3>4.5 The debug build</h3>
+<p>A common bug is writing one element past the end of an array. The program often still gives the right answer, because the memory next to the array happens to be free. The release build hides the bug.</p>
+<p>The debug build (<b>Space d</b>) compiles with AddressSanitizer, UBSan and bounds-checked containers. It stops at the first bad access and prints where it happened:</p>
+<pre>Error: attempt to subscript container with out-of-bounds index 5,
+but container only holds 2 elements.</pre>
+<p>Run it when a sample fails for no obvious reason, and before submitting problems that involve indexes or large numbers.</p>
+
+<h3>4.6 Stress testing</h3>
+<p>Stress testing needs three files:</p>
+<ul>
+  <li><b>brute.cpp</b>: the simplest correct solution. Speed does not matter.</li>
+  <li><b>gen.py</b>: prints one random, valid, small input. It receives a seed as its argument, so every run can be reproduced.</li>
+  <li><b>sol.cpp</b>: your real solution.</li>
+</ul>
+<p>The stress tester runs seeds 1, 2, 3 and so on, feeds each input to both programs, and compares the outputs. On the first mismatch it stops and saves the input to <code>stress_fail/input.txt</code>. Run your solution on that file to reproduce the problem.</p>
+<p>Keep the inputs small. The brute force must finish, and most bugs show up on small inputs anyway.</p>
+
+<h2>5. Editors</h2>
+<h3>VS Code with Vim</h3>
+<p>The installer enables the Vim extension and the C/C++ extension. The leader key is <b>Space</b>.</p>
+<table>
+  <tr><th>Keys</th><th>Action</th></tr>
+  <tr><td>Space b</td><td>Run the samples</td></tr>
+  <tr><td>Space d</td><td>Run the samples with the debug build</td></tr>
+  <tr><td>Space s</td><td>Stress test the problem</td></tr>
+  <tr><td>Space l</td><td>Start the listener</td></tr>
+  <tr><td>j k</td><td>Leave insert mode</td></tr>
+  <tr><td>Cmd Shift B</td><td>Run the samples (the default build task, works without Vim)</td></tr>
+</table>
+<h3>Sublime Text with Vim</h3>
+<p>Sublime's built-in Vim mode (Vintage) is enabled. Use <b>Cmd B</b> to run the samples. Choose <i>Tools &gt; Build System &gt; CF-C++</i> once, and save the folder as a project to keep the choice. For the debug build, use <i>Tools &gt; Build With &gt; Debug</i>.</p>
+<p class="note">The Sublime setup has been checked by generating and validating its files. It has not been run inside the editor by the project.</p>
+
+<h3>Snippets</h3>
+<p>Type the prefix and press Tab.</p>
+<table>
+  <tr><th>Prefix</th><th>Expands to</th></tr>
+  <tr><td>cp</td><td>The full template</td></tr>
+  <tr><td>forn / forr</td><td>Loop from 0 up to n, or from n-1 down to 0</td></tr>
+  <tr><td>vin</td><td>Read n values into a vector</td></tr>
+  <tr><td>bs</td><td>Binary search for the smallest x where a condition holds</td></tr>
+  <tr><td>mpow</td><td>Modular power</td></tr>
+  <tr><td>yn</td><td>Print YES or NO</td></tr>
+  <tr><td>dbg</td><td>Debug print to stderr, ignored on Codeforces</td></tr>
+</table>
+<p>The snippets are defined once, in <code>.vscode/cpp.code-snippets</code>. The installer converts them for Sublime.</p>
+
+<h2>6. Contest day</h2>
+<ol>
+  <li>Start the listener and leave it running.</li>
+  <li>Click Competitive Companion on each problem, and open <code>sol.cpp</code>.</li>
+  <li>For tricky problems, write <code>brute.cpp</code> and <code>gen.py</code> first.</li>
+  <li>Run the samples after each change. Fix every wrong answer before moving on.</li>
+  <li>Before submitting: run the debug build, then the stress test.</li>
+  <li>Submit <code>sol.cpp</code>. The <code>dbg</code> lines do nothing on Codeforces.</li>
+</ol>
+
+<h2>7. Troubleshooting</h2>
+<p>Start with <code>python3 scripts/doctor.py</code>. It checks the compiler, the header, the port, the editors and the example, and explains each problem.</p>
+<table>
+  <tr><th>Problem</th><th>Fix</th></tr>
+  <tr><td>No GCC found</td><td><code>brew install gcc</code>. Or set <code>CP_CXX</code> to the path of your GCC.</td></tr>
+  <tr><td>Clicking the extension does nothing</td><td>The listener must be running and print <i>saved ...</i>. Open <code>http://127.0.0.1:27121/</code> in a browser to check it. Another program may be using port 27121.</td></tr>
+  <tr><td>Compiles are slow</td><td>Run <code>python3 scripts/pch.py</code>.</td></tr>
+  <tr><td>Vim keys do nothing in VS Code</td><td>Open the repository folder itself, not a subfolder, and check that the Vim extension is enabled.</td></tr>
+  <tr><td>Your answer is right but the judge says WA</td><td>The problem may accept several answers. The judge compares against one stored answer, so check the output by hand.</td></tr>
+</table>
+
+<h2>8. Limits</h2>
+<ul>
+  <li><b>Only samples are saved.</b> Hidden tests are not available locally, so a passing judge does not guarantee acceptance. Stress testing covers part of that gap.</li>
+  <li><b>No interactive problems.</b> The judge runs a program on a fixed input.</li>
+  <li><b>Approximate comparison.</b> Output is compared token by token. Floating-point numbers may differ by up to 10<sup>-6</sup>. Problems with several valid answers need a checker.</li>
+  <li><b>Linux is not tested yet.</b> The code is written to work there, but it has not been run on a Linux machine.</li>
+  <li><b>No debugger is set up.</b> Use <code>dbg</code> and the debug build.</li>
+</ul>
+
+<p class="small">Source: <a href="https://github.com/bobikenobi12/cf-kit">github.com/bobikenobi12/cf-kit</a>. MIT License.</p>
+
 </body>
 </html>
