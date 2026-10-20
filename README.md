@@ -22,6 +22,15 @@ python3 scripts/stress.py examples/sum-of-two -n 200      # random tests against
 python3 scripts/doctor.py                                 # check the setup
 ```
 
+## Two copies: tools and contests
+
+Keep two clones of this repository:
+
+- **Tool source** (where changes are made and pushed): this repository.
+- **Contest workspace** (your real solutions, under `contests/`): a separate clone. Update it with `git pull`, never by copying files over.
+
+Run `setup/install.py` in each clone that you use with an editor. Sublime Text's build system points at the clone you ran it in last.
+
 ## Platforms
 
 - **macOS** (Apple Silicon, Homebrew GCC): tested.
